@@ -15,8 +15,20 @@
 
         <h2>Example Usage:</h2>
         <p>
-            <a href="api/whoami">[base url]/api/whoami</a>
+            <a onclick="demoAPI('/api/whoami')">[base url]/api/whoami</a>
         </p>
+
+        <h2> Demo Outputs</h2>
+        <div id="loading-container" class="loader-container">
+            <div class="loader" style="display: none;"></div>
+            <p style="margin-left: 10px; display: none;">Loading...</p>
+        </div>
+
+        <div id="api-response">
+            <pre><code id="response-content"></code></pre>
+        </div>
+
+        <div id="error-container" class="error-message" style="display: none;"></div>
 
         <h2>Example Output:</h2>
         <p>
@@ -29,6 +41,41 @@
             backends course
         </p>
     </div>
+
+    <script>
+        const demoAPI = (url) => {
+            const loadingContainer = document.getElementById('loading-container');
+            const apiResponseDiv = document.getElementById('api-response');
+            const responseContent = document.getElementById('response-content');
+            const errorContainer = document.getElementById('error-container');
+
+            loadingContainer.style.display = "block";
+            apiResponseDiv.style.display = "block";
+            // Reset previous state
+            apiResponseDiv.style.display = 'none';
+            errorContainer.style.display = 'none';
+            responseContent.textContent = '';
+            errorContainer.textContent = '';
+            // Replace '/api/your-endpoint' with the actual API endpoint you want to call
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loadingContainer.style.display = 'none'; // Hide the loader
+                    apiResponseDiv.style.display = 'block'; // Show the API response area
+                    responseContent.textContent = JSON.stringify(data, null, 2); // Display JSON with indentation
+                })
+                .catch(error => {
+                    loadingContainer.style.display = 'none'; // Hide the loader
+                    errorContainer.style.display = 'block'; // Show the error message area
+                    errorContainer.textContent = `Error fetching data: ${error}`;
+                });
+        };
+    </script>
 </body>
 
 
