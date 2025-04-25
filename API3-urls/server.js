@@ -3,7 +3,9 @@
 
 // init project
 var express = require("express");
+// get proxy ips
 const proxyAddr = require("proxy-addr");
+
 require("dotenv").config(); // Load .env variables
 const pool = require("./db"); // Adjust the path if db.js is in a different folder
 
@@ -35,13 +37,33 @@ async function DBoperation(retries = 3, SQLquery) {
   }
 }
 
-// Call this function to perform database operations
-DBoperation((retries = 1), (SQLquery = "SELECT * FROM urls"))
-  .then((data) => console.log("Query result:", data))
-  .catch((error) => console.error("Final database error:", error));
+// create a random string of n chars
+function Str_Random(length) {
+  let result = "";
+  const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
 
+  // Loop to generate characters for the specified length
+  for (let i = 0; i < length; i++) {
+    const randomInd = Math.floor(Math.random() * characters.length);
+    result += characters.charAt(randomInd);
+  }
+  return result;
+}
+
+console.log(Str_Random(5));
+// Call this function to perform database operations for testing purposes
+// DBoperation((retries = 1), (SQLquery = "SELECT * FROM urls"))
+//   .then((data) => console.log("Query result:", data))
+//   .catch((error) => console.error("Final database error:", error));
+
+//create instance of express
 var app = express();
+
+// allow proxy addresses
 app.set("trust proxy", true);
+
+// set middleware to parse forms
+app.use(express.urlencoded({ extended: false }));
 
 //// enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC
@@ -56,19 +78,79 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + "/views/index.html");
 });
 
-app.get("/api/:shortened", function (req, res) {
+app.get("/api/shorturl/:shortened", function (req, res) {
   // query db and redirect
+  const query = `
+  SELECT long_url 
+  FROM urls 
+  WHERE short_url = '${req.params.shortened}'
+  `;
 
-  res.json({
-    ipaddress: ipaddress,
-    language: language,
-    software: software,
-  });
+  DBoperation((retries = 1), (SQLquery = query))
+    .then((data) => {
+      console.log("Query result:", data);
+      // Immediate redirect
+      const url = data[0].long_url;
+      console.log("redirecting to this URL", url);
+      return res.redirect(`${url}`);
+    })
+    .catch((error) => console.error("Final database error:", error));
 });
 
-app.post("/api", function (req, res) {
-  // post to db
-  //respond with shortened url
+app.post("/api/shorturl", async function (req, res) {
+  console.log(req.body);
+  let match = 1;
+  let short_url = "";
+  // check if shortening already exists
+  const checkLongQuery = `
+    SELECT short_url,long_url FROM urls WHERE long_url = '${req.body.url}';
+  `;
+  // send query and return early if existing
+  const data = await DBoperation((retries = 2), (SQLquery = checkLongQuery));
+  try {
+    if (data[0].short_url) {
+      console.log("returning early");
+      return res.json({
+        original_url: req.body.url,
+        short_url: data[0].short_url, // Assuming your query returns short_url as well
+      });
+    }
+  } catch {}
+  //ensure no duplicate shortenings are used
+  do {
+    console.log("your early return failed");
+    short_url = Str_Random(5);
+    console.log(short_url);
+    const query = `
+    SELECT short_url FROM urls WHERE short_url = '${short_url}';
+    `;
+    // check not duplicate
+    await DBoperation((retries = 2), (SQLquery = query))
+      .then((data) => {
+        console.log("Query result:", data[0] ? "exists" : "not yet");
+        console.log(data);
+        if (!data[0]) {
+          match = 0;
+        }
+      })
+      .catch((error) => console.error("Final database error:", error));
+  } while (match);
+
+  // send new data to the table
+  const insertQuery = `
+  INSERT INTO urls (short_url,long_url)
+  VALUES('${short_url}','${req.body.url}');
+  `;
+  await DBoperation((retries = 2), (SQLquery = insertQuery))
+    .then((data) => {
+      console.log("insert successful");
+    })
+    .catch((error) => console.error("Final database error:", error));
+
+  res.json({
+    original_url: req.body.url,
+    short_url: short_url,
+  });
 });
 
 // Listen on port set in environment variable or default to 3000

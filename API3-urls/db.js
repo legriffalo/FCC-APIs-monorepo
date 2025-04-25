@@ -15,7 +15,7 @@ pool
   .connect()
   .then(() => {
     console.log("Connected to Supabase!");
-    pool.end();
+    // pool.end();
   })
   .catch((err) => {
     console.error("Error connecting to Supabase:", err);

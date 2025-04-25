@@ -11,7 +11,7 @@ body {
     padding: 20px; /* Add some padding around the content */
 }
 
-.container {
+form {
     padding: 20px; /* Add padding inside the container */
     margin-top: 40px;
     background-color: #1e1e1e; /* Slightly lighter dark background for sections */
@@ -19,17 +19,28 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle drop shadow */
     margin-left: auto;
     margin-right: auto;
-    max-width: 800px; /* Optional: Limit container width for better readability on larger screens */
+    max-width: 800px;
+    min-height:20vh; /* Optional: Limit container width for better readability on larger screens */
+
+}
+
+fieldset{
+    min-height:18vh;
+}
+
+input[type=text]{
+    width: 50%;
+    height:30px;
+    margin-top:20px;
+}
+
+input{
+    height:30px;
 }
 
 h3 {
     margin-top: 30px;
     color: #bb86fc;
-}
-
-hr {
-    margin: 25px;
-    border: 1px solid #333;
 }
 
 .footer {
@@ -39,23 +50,6 @@ hr {
     background-color: #1e1e1e;
     border-radius: 8px;
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2); /* Subtle top shadow for separation */
-}
-
-code {
-    font-family: monospace;
-    padding: 4px 8px;
-    color: #d4edda;
-    background-color: #282c34;
-    border-radius: 4px;
-}
-
-ul {
-    list-style-type: none;
-    padding-left: 0;
-}
-
-li {
-    margin-bottom: 0.75em;
 }
 
 a {
