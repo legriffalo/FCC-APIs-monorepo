@@ -116,16 +116,16 @@ app.post("/api/shorturl", async function (req, res) {
     SELECT short_url,long_url FROM urls WHERE long_url = '${req.body.url}';
   `;
   // send query and return early if existing
-  // const data = await DBoperation((retries = 1), (SQLquery = checkLongQuery));
-  // try {
-  //   if (data[0].short_url) {
-  //     console.log("returning early");
-  //     return res.json({
-  //       original_url: req.body.url,
-  //       short_url: data[0].short_url,
-  //     });
-  //   }
-  // } catch {}
+  const data = await DBoperation((retries = 1), (SQLquery = checkLongQuery));
+  try {
+    if (data[0].short_url) {
+      console.log("returning early");
+      return res.json({
+        original_url: req.body.url,
+        short_url: data[0].short_url,
+      });
+    }
+  } catch {}
 
   //ensure no duplicate shortenings are used
   do {
