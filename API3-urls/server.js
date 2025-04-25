@@ -108,7 +108,7 @@ app.post("/api/shorturl", async function (req, res) {
       error: "invalid url",
     });
   }
-  console.log(req.body);
+
   let match = 1;
   let short_url = "";
   // check if shortening already exists
@@ -116,7 +116,7 @@ app.post("/api/shorturl", async function (req, res) {
     SELECT short_url,long_url FROM urls WHERE long_url = '${req.body.url}';
   `;
   // send query and return early if existing
-  const data = await DBoperation((retries = 2), (SQLquery = checkLongQuery));
+  const data = await DBoperation((retries = 1), (SQLquery = checkLongQuery));
   try {
     if (data[0].short_url) {
       console.log("returning early");
@@ -126,6 +126,7 @@ app.post("/api/shorturl", async function (req, res) {
       });
     }
   } catch {}
+
   //ensure no duplicate shortenings are used
   do {
     console.log("your early return failed");
@@ -151,6 +152,7 @@ app.post("/api/shorturl", async function (req, res) {
   INSERT INTO urls (short_url,long_url)
   VALUES('${short_url}','${req.body.url}');
   `;
+
   await DBoperation((retries = 2), (SQLquery = insertQuery))
     .then((data) => {
       console.log("insert successful");
