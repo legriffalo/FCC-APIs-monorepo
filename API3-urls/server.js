@@ -98,6 +98,16 @@ app.get("/api/shorturl/:shortened", function (req, res) {
 });
 
 app.post("/api/shorturl", async function (req, res) {
+  // check url format
+  const long_url = req.body.url;
+  const regTest = /^https:\/\/www\.[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\/?$/.test(
+    long_url
+  );
+  if (regTest == false) {
+    return res.json({
+      error: "invalid url",
+    });
+  }
   console.log(req.body);
   let match = 1;
   let short_url = "";
@@ -112,7 +122,7 @@ app.post("/api/shorturl", async function (req, res) {
       console.log("returning early");
       return res.json({
         original_url: req.body.url,
-        short_url: data[0].short_url, // Assuming your query returns short_url as well
+        short_url: data[0].short_url,
       });
     }
   } catch {}
