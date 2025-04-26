@@ -99,20 +99,18 @@ app.get("/api/shorturl/:shortened", function (req, res) {
 
 app.post("/api/shorturl", async function (req, res) {
   // check url format
-  try {
-    const long_url = req.body.url ? req.body.url : "false";
-    const regTest = /^https:\/\/www\.[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\/?$/.test(
-      long_url
-    );
-  } catch {
-    return res.json({
-      error: "invalid url",
-    });
+  const long_url = req.body.url;
+
+  if (!long_url) {
+    return res.json({ error: "invalid url" }); // Return early if no URL is provided
   }
-  if (regTest == false) {
-    return res.json({
-      error: "invalid url",
-    });
+
+  const regTest = /^https:\/\/www\.[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\/?$/.test(
+    long_url
+  );
+
+  if (!regTest) {
+    return res.json({ error: "invalid url" }); // Return early if URL is malformed
   }
 
   let match = 1;
