@@ -104,7 +104,11 @@ app.post("/api/shorturl", async function (req, res) {
     const regTest = /^https:\/\/www\.[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\/?$/.test(
       long_url
     );
-  } catch {}
+  } catch {
+    return res.json({
+      error: "invalid url",
+    });
+  }
   if (regTest == false) {
     return res.json({
       error: "invalid url",
