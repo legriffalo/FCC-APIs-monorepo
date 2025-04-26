@@ -88,6 +88,7 @@ app.get("/api/shorturl/:shortened", function (req, res) {
     .then((data) => {
       console.log("Query result:", data);
       // Immediate redirect
+      console.log(req.params.shortened);
       const url = data[0].long_url;
       console.log("redirecting to this URL", url);
       return res.redirect(`${url}`);
