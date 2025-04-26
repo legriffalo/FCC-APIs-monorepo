@@ -81,12 +81,10 @@ app.get("/", function (req, res) {
 app.get("/api/shorturl/:shortened", function (req, res) {
   // query db and redirect
   const query = `
-  SELECT long_url 
-  FROM urls 
-  WHERE short_url = '${req.params.shortened}'
+  SELECT long_url FROM urls WHERE short_url = '${req.params.shortened}'
   `;
 
-  DBoperation((retries = 1), (SQLquery = query))
+  DBoperation((retries = 2), (SQLquery = query))
     .then((data) => {
       console.log("Query result:", data);
       // Immediate redirect
