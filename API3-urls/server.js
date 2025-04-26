@@ -75,24 +75,29 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + "/views/index.html");
 });
 
-app.get("/api/shorturl/:shortened", function (req, res) {
-  // query db and redirect
+app.get("/api/shorturl/:shortened", async function (req, res) {
+  const shortened = req.params.shortened;
+
+  if (!shortened) {
+    console.log("Received request with empty shortened URL parameter");
+    return res.status(400).json({ error: "No shortened URL provided" });
+  }
+
   const query = `
-  SELECT long_url FROM urls WHERE short_url = '${req.params.shortened}'
+    SELECT long_url FROM urls WHERE short_url = '${shortened}';
   `;
 
   DBoperation((retries = 2), (SQLquery = query))
     .then((data) => {
       console.log("Query result:", data);
-      // Immediate redirect
-      console.log(req.params.shortened);
+      console.log(req.params.shortened); // This will now have a value
       if (data[0]) {
         const url = data[0].long_url;
         console.log("redirecting to this URL", url);
         return res.redirect(`${url}`);
       } else {
-        console.log("no redirect in place");
-        // return res.redirect("/");
+        console.log("no redirect in place for:", shortened);
+        return res.status(404).json({ error: "Shortened URL not found" });
       }
     })
     .catch((error) => console.error("Final database error:", error));
