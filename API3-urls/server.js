@@ -97,7 +97,8 @@ app.get("/api/shorturl/:shortened", async function (req, res) {
         return res.redirect(`${url}`);
       } else {
         console.log("no redirect in place for:", shortened);
-        return res.status(404).json({ error: "Shortened URL not found" });
+        // return res.status(404).json({ error: "Shortened URL not found" });
+        return res.redirect("/");
       }
     })
     .catch((error) => console.error("Final database error:", error));
