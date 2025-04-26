@@ -108,6 +108,17 @@ app.get("/api/shorturl/:shortened", async function (req, res) {
 
 app.post("/api/shorturl", async function (req, res) {
   // check url format
+  const long_url = req.body.url;
+
+  if (!long_url) {
+    return res.json({ error: "invalid url" }); // Return early if no URL
+  }
+
+  const urlRegex =
+    /^(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/;
+  if (!urlRegex.test(long_url)) {
+    return res.json({ error: "invalid url" }); // Return early if malformed
+  }
   // const long_url = req.body.url;
 
   // if (!long_url) {
