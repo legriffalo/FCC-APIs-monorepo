@@ -58,17 +58,14 @@ console.log(Str_Random(5));
 
 //create instance of express
 var app = express();
-
-// allow proxy addresses
-app.set("trust proxy", true);
-
-// set middleware to parse forms
-app.use(express.urlencoded({ extended: false }));
-
 //// enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC
 var cors = require("cors");
 app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 204
+// allow proxy addresses
+app.set("trust proxy", true);
+// set middleware to parse forms
+app.use(express.urlencoded({ extended: false }));
 
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
@@ -89,9 +86,13 @@ app.get("/api/shorturl/:shortened", function (req, res) {
       console.log("Query result:", data);
       // Immediate redirect
       console.log(req.params.shortened);
-      const url = data[0].long_url;
-      console.log("redirecting to this URL", url);
-      return res.redirect(`${url}`);
+      if (data) {
+        const url = data[0].long_url;
+        console.log("redirecting to this URL", url);
+        return res.redirect(`${url}`);
+      } else {
+        console.log("no redirect in place");
+      }
     })
     .catch((error) => console.error("Final database error:", error));
 });
@@ -116,8 +117,7 @@ app.post("/api/shorturl", async function (req, res) {
   let short_url = "";
   // check if shortening already exists
   const checkLongQuery = `
-    SELECT short_url,long_url FROM urls WHERE long_url = '${req.body.url}';
-  `;
+    SELECT short_url,long_url FROM urls WHERE long_url = '${req.body.url}' `;
   // send query and return early if existing
   const data = await DBoperation((retries = 1), (SQLquery = checkLongQuery));
   try {
