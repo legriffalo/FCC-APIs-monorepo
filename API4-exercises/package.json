@@ -1,16 +1,22 @@
 {
-  "name": "fcc-exercise-api",
-  "author":"Nick G",
+  "name": "fcc-exercisetracker-api",
+  "author": "Nick G",
   "version": "0.1.0",
   "dependencies": {
     "body-parser": "^1.15.2",
     "cookie-parser": "^1.4.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
-    "express": "^4.14.0",
-    "fcc-express-bground": "https://github.com/freeCodeCamp/fcc-express-bground-pkg.git"
+    "express": "^4.21.2",
+    "fcc-express-bground": "https://github.com/freeCodeCamp/fcc-express-bground-pkg.git",
+    "pg": "^8.14.1"
   },
   "main": "server.js",
   "scripts": {
-    "start": "node --watch server.js"
+    "start": "node --watch server.js",
+    "debug":"nodemon server.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }

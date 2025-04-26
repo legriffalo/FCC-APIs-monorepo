@@ -1,0 +1,46 @@
+Creating tables exercise tracker 
+
+
+-- full reset
+-- DROP TABLE users_table;
+-- DROP TABLE exercises;
+
+
+-- DB build 
+CREATE TABLE users_table();
+CREATE TABLE exercises();
+
+--build out user_tables
+ALTER TABLE users_table
+ADD COLUMN user_id SERIAL UNIQUE,
+ADD COLUMN username VARCHAR(30),
+ADD COLUMN hashed_user VARCHAR(60);
+
+-- insert data to users
+INSERT INTO users_table (username, hashed_user) 
+VALUES('tester', '112dfdfgdftest');
+
+-- build out exercises
+ALTER TABLE exercises
+ADD COLUMN log_id SERIAL,
+ADD COLUMN user_id INT,
+ADD COLUMN description VARCHAR(100),
+ADD COLUMN duration_mins INT,
+ADD COLUMN date DATE DEFAULT CURRENT_DATE; 
+
+-- insert data to exercises
+INSERT INTO exercises (user_id, description, duration_mins, date) 
+VALUES(1, 'test exercise',20, '2021-04-01');
+
+-- link tables
+ALTER TABLE exercises 
+ADD CONSTRAINT link_ids 
+FOREIGN KEY (user_id) REFERENCES users_table (user_id) ON DELETE CASCADE;
+
+
+-- check db content
+-- SELECT * FROM users;
+-- SELECT * FROM exercises;
+
+
+
