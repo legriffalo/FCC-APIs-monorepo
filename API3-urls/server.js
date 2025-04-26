@@ -77,10 +77,12 @@ app.get("/", function (req, res) {
 
 app.get("/api/shorturl/:shortened", async function (req, res) {
   const shortened = req.params.shortened;
+  console.log("Value of shortened:", shortened); // Add this line
 
-  if (!shortened) {
+  if (!shortened || shortened === "undefined") {
     console.log("Received request with empty shortened URL parameter");
-    return res.status(400).json({ error: "No shortened URL provided" });
+    // return res.status(400).json({ error: "No shortened URL provided" });
+    return res.redirect("/");
   }
 
   const query = `
@@ -106,19 +108,19 @@ app.get("/api/shorturl/:shortened", async function (req, res) {
 
 app.post("/api/shorturl", async function (req, res) {
   // check url format
-  const long_url = req.body.url;
+  // const long_url = req.body.url;
 
-  if (!long_url) {
-    return res.json({ error: "invalid url" }); // Return early if no URL is provided
-  }
+  // if (!long_url) {
+  //   return res.json({ error: "invalid url" }); // Return early if no URL is provided
+  // }
 
-  const regTest = /^https:\/\/www\.[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\/?$/.test(
-    long_url
-  );
+  // const regTest = /^https:\/\/www\.[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\/?$/.test(
+  //   long_url
+  // );
 
-  if (!regTest) {
-    return res.json({ error: "invalid url" }); // Return early if URL is malformed
-  }
+  // if (!regTest) {
+  //   return res.json({ error: "invalid url" }); // Return early if URL is malformed
+  // }
 
   let match = 1;
   let short_url = "";
