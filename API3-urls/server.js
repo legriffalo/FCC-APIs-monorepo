@@ -86,12 +86,13 @@ app.get("/api/shorturl/:shortened", function (req, res) {
       console.log("Query result:", data);
       // Immediate redirect
       console.log(req.params.shortened);
-      if (data) {
+      if (data[0]) {
         const url = data[0].long_url;
         console.log("redirecting to this URL", url);
         return res.redirect(`${url}`);
       } else {
         console.log("no redirect in place");
+        // return res.redirect("/");
       }
     })
     .catch((error) => console.error("Final database error:", error));
